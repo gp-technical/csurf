@@ -1,7 +1,6 @@
 {
   "name": "@gp-technical/csurf",
   "description": "CSRF token middleware",
-  "private": true,
   "version": "1.11.0",
   "author": "GoodPractice",
   "contributors": [
@@ -22,6 +21,9 @@
     "http-errors": "~1.7.2"
   },
   "devDependencies": {
+    "@gp-technical/eslint-config-stack": "^1.3.70718019",
+    "@gp-technical/stack-pack-standard": "^3.1.0",
+    "babel-eslint": "^10.0.2",
     "body-parser": "1.18.3",
     "connect": "3.6.6",
     "cookie-parser": "1.4.4",
@@ -41,10 +43,13 @@
     "node": ">= 0.8.0"
   },
   "scripts": {
-    "lint": "eslint --plugin markdown --ext js,md .",
-    "test": "mocha --check-leaks --reporter spec --bail test/",
+    "test": "echo no tests",
     "test-cov": "nyc --reporter=html --reporter=text npm test",
-    "test-travis": "nyc --reporter=text npm test"
+    "test-travis": "nyc --reporter=text npm test",
+    "lint": "eslint --ext .js,.jsx .",
+    "build": "yarn lint && sp-build",
+    "build:debug": "yarn lint && sp-build-debug",
+    "prepublishOnly": "yarn build"
   },
   "files": [
     "HISTORY.md",
