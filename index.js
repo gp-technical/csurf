@@ -64,6 +64,16 @@ function csurf (options) {
 
   // generate lookup
   var ignoreMethod = getIgnoredMethods(ignoreMethods)
+  
+  // whitelisted ip's list
+  var whiteListedIps = opts.whiteListedIps === undefined ? [] : opts.whiteListedIps
+
+  if (!Array.isArray(whiteListedIps)) {
+    throw new TypeError('option whiteListedIps must be an array')
+  }
+
+  // generate whitelisted ip's lookup
+  var ignoreIp = getIpWhiteList(whiteListedIps)
 
   return function csrf (req, res, next) {
     // validate the configuration against request
@@ -99,6 +109,14 @@ function csurf (options) {
       token = tokens.create(secret)
 
       return token
+    }
+
+    // get request ip even through nginx proxy
+    var ip = req.header('x-forwarded-for') || req.connection.remoteAddress
+
+    // verity if ip is white listed
+    if(ignoreIp[ip.toUpperCase()]) {
+      return next()
     }
 
     // generate & set secret
@@ -294,4 +312,19 @@ function verifyConfiguration (req, sessionKey, cookie) {
   }
 
   return true
+}
+
+/**
+ * Get a lookup of the whitelisted IP's
+ */
+function getIpWhiteList(whiteList){
+  var obj = {}
+
+  for (var i = 0; i < whiteList.length; i++) {
+    var ip = whiteList[i].toUpperCase()
+    obj[ip] = true
+  }
+
+  return obj
+
 }
