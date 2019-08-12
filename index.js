@@ -38,7 +38,7 @@ module.exports = csurf
  * @public
  */
 
-function csurf (options) {
+function csurf(options) {
   var opts = options || {}
 
   // get cookie options
@@ -54,9 +54,8 @@ function csurf (options) {
   var tokens = new Tokens(opts)
 
   // ignored methods
-  var ignoreMethods = opts.ignoreMethods === undefined
-    ? ['GET', 'HEAD', 'OPTIONS']
-    : opts.ignoreMethods
+  var ignoreMethods =
+    opts.ignoreMethods === undefined ? ['GET', 'HEAD', 'OPTIONS'] : opts.ignoreMethods
 
   if (!Array.isArray(ignoreMethods)) {
     throw new TypeError('option ignoreMethods must be an array')
@@ -64,7 +63,7 @@ function csurf (options) {
 
   // generate lookup
   var ignoreMethod = getIgnoredMethods(ignoreMethods)
-  
+
   // whitelisted ip's list
   var whiteListedIps = opts.whiteListedIps === undefined ? [] : opts.whiteListedIps
 
@@ -75,7 +74,7 @@ function csurf (options) {
   // generate whitelisted ip's lookup
   var ignoreIp = getIpWhiteList(whiteListedIps)
 
-  return function csrf (req, res, next) {
+  return function csrf(req, res, next) {
     // validate the configuration against request
     if (!verifyConfiguration(req, sessionKey, cookie)) {
       return next(new Error('misconfigured csrf'))
@@ -86,10 +85,8 @@ function csurf (options) {
     var token
 
     // lazy-load token getter
-    req.csrfToken = function csrfToken () {
-      var sec = !cookie
-        ? getSecret(req, sessionKey, cookie)
-        : secret
+    req.csrfToken = function csrfToken() {
+      var sec = !cookie ? getSecret(req, sessionKey, cookie) : secret
 
       // use cached token if secret has not changed
       if (token && sec === secret) {
@@ -115,7 +112,7 @@ function csurf (options) {
     var ip = req.header('x-forwarded-for') || req.connection.remoteAddress
 
     // verity if ip is white listed
-    if(ignoreIp[ip.toUpperCase()]) {
+    if (ignoreIp[ip.toUpperCase()]) {
       return next()
     }
 
@@ -127,9 +124,11 @@ function csurf (options) {
 
     // verify the incoming token
     if (!ignoreMethod[req.method] && !tokens.verify(secret, value(req))) {
-      return next(createError(403, 'invalid csrf token', {
-        code: 'EBADCSRFTOKEN'
-      }))
+      return next(
+        createError(403, 'invalid csrf token', {
+          code: 'EBADCSRFTOKEN'
+        })
+      )
     }
 
     next()
@@ -145,13 +144,15 @@ function csurf (options) {
  * @api private
  */
 
-function defaultValue (req) {
-  return (req.body && req.body._csrf) ||
+function defaultValue(req) {
+  return (
+    (req.body && req.body._csrf) ||
     (req.query && req.query._csrf) ||
-    (req.headers['csrf-token']) ||
-    (req.headers['xsrf-token']) ||
-    (req.headers['x-csrf-token']) ||
-    (req.headers['x-xsrf-token'])
+    req.headers['csrf-token'] ||
+    req.headers['xsrf-token'] ||
+    req.headers['x-csrf-token'] ||
+    req.headers['x-xsrf-token']
+  )
 }
 
 /**
@@ -162,7 +163,7 @@ function defaultValue (req) {
  * @api private
  */
 
-function getCookieOptions (options) {
+function getCookieOptions(options) {
   if (options !== true && typeof options !== 'object') {
     return undefined
   }
@@ -194,7 +195,7 @@ function getCookieOptions (options) {
  * @api private
  */
 
-function getIgnoredMethods (methods) {
+function getIgnoredMethods(methods) {
   var obj = Object.create(null)
 
   for (var i = 0; i < methods.length; i++) {
@@ -214,7 +215,7 @@ function getIgnoredMethods (methods) {
  * @api private
  */
 
-function getSecret (req, sessionKey, cookie) {
+function getSecret(req, sessionKey, cookie) {
   // get the bag & key
   var bag = getSecretBag(req, sessionKey, cookie)
   var key = cookie ? cookie.key : 'csrfSecret'
@@ -236,12 +237,10 @@ function getSecret (req, sessionKey, cookie) {
  * @api private
  */
 
-function getSecretBag (req, sessionKey, cookie) {
+function getSecretBag(req, sessionKey, cookie) {
   if (cookie) {
     // get secret from cookie
-    var cookieKey = cookie.signed
-      ? 'signedCookies'
-      : 'cookies'
+    var cookieKey = cookie.signed ? 'signedCookies' : 'cookies'
 
     return req[cookieKey]
   } else {
@@ -260,12 +259,11 @@ function getSecretBag (req, sessionKey, cookie) {
  * @api private
  */
 
-function setCookie (res, name, val, options) {
+function setCookie(res, name, val, options) {
   var data = Cookie.serialize(name, val, options)
 
   var prev = res.getHeader('set-cookie') || []
-  var header = Array.isArray(prev) ? prev.concat(data)
-    : [prev, data]
+  var header = Array.isArray(prev) ? prev.concat(data) : [prev, data]
 
   res.setHeader('set-cookie', header)
 }
@@ -281,7 +279,7 @@ function setCookie (res, name, val, options) {
  * @api private
  */
 
-function setSecret (req, res, sessionKey, val, cookie) {
+function setSecret(req, res, sessionKey, val, cookie) {
   if (cookie) {
     // set secret on cookie
     var value = val
@@ -302,7 +300,7 @@ function setSecret (req, res, sessionKey, val, cookie) {
  * @private
  */
 
-function verifyConfiguration (req, sessionKey, cookie) {
+function verifyConfiguration(req, sessionKey, cookie) {
   if (!getSecretBag(req, sessionKey, cookie)) {
     return false
   }
@@ -317,7 +315,7 @@ function verifyConfiguration (req, sessionKey, cookie) {
 /**
  * Get a lookup of the whitelisted IP's
  */
-function getIpWhiteList(whiteList){
+function getIpWhiteList(whiteList) {
   var obj = {}
 
   for (var i = 0; i < whiteList.length; i++) {
@@ -326,5 +324,4 @@ function getIpWhiteList(whiteList){
   }
 
   return obj
-
 }
