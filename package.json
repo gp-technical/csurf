@@ -1,7 +1,6 @@
 {
   "name": "@gp-technical/csurf",
   "description": "CSRF token middleware",
-  "private": true,
   "version": "1.11.0",
   "author": "GoodPractice",
   "contributors": [
