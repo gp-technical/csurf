@@ -3,8 +3,9 @@
   "description": "CSRF token middleware",
   "private": true,
   "version": "1.11.0",
-  "author": "Jonathan Ong <me@jongleberry.com> (http://jongleberry.com)",
+  "author": "GoodPractice",
   "contributors": [
+    "Jonathan Ong <me@jongleberry.com> (http://jongleberry.com)",
     "Douglas Christopher Wilson <doug@somethingdoug.com>",
     "Julio Lemes <juliolemesti@gmail.com>"
   ],
